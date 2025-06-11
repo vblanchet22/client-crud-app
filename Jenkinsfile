@@ -1,12 +1,12 @@
 pipeline {
     agent any
 
-    environment {
-        SONARQUBE_SERVER = 'SonarCloud'
-    }
-
     tools {
         nodejs 'NodeJS'
+    }
+
+    environment {
+        SONARQUBE_ENV = 'SonarCloud'
     }
 
     stages {
@@ -21,24 +21,29 @@ pipeline {
                 sh 'npm ci'
             }
         }
+
         stage('Generate Prisma Client') {
             steps {
                 sh 'npx prisma generate'
             }
         }
+
         stage('Build') {
             steps {
+                sh 'ls -la && ls prisma && cat prisma/schema.prisma'
                 sh 'npm run build'
             }
         }
-        stage('Test + Coverage') {
+
+        stage('Run tests with coverage') {
             steps {
                 sh 'npm run test -- --coverage'
             }
         }
-        stage('SonarCloud analysis') {
+
+        stage('SonarCloud Analysis') {
             steps {
-                withSonarQubeEnv("${SONARQUBE_SERVER}") {
+                withSonarQubeEnv("${SONARQUBE_ENV}") {
                     sh 'sonar-scanner'
                 }
             }
