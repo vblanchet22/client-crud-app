@@ -1,49 +1,45 @@
 pipeline {
-  agent any
+    agent any
 
-  tools {
-    nodejs 'node20'
-  }
-
-  environment {
-    SONAR_TOKEN = credentials('SONARCLOUD_TOKEN')
-  }
-
-  stages {
-    stage('Checkout') {
-      steps {
-        checkout scm
-      }
+    environment {
+        SONARQUBE_SERVER = 'SonarCloud'
     }
 
-    stage('Install deps') {
-      steps {
-        sh 'npm ci'
-      }
+    tools {
+        nodejs 'NodeJS'
     }
 
-    stage('Lint') {
-      steps {
-        sh 'npm run lint || echo "lint failed"'
-      }
-    }
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
 
-    stage('Build') {
-      steps {
-        sh 'npm run build'
-      }
-    }
+        stage('Install dependencies') {
+            steps {
+                sh 'npm ci'
+            }
+        }
 
-    stage('Test') {
-      steps {
-        sh 'npm test || true'
-      }
-    }
+        stage('Build') {
+            steps {
+                sh 'npm run build'
+            }
+        }
 
-    stage('SonarCloud Analysis') {
-      steps {
-        sh "npx sonar-scanner -Dsonar.login=$SONAR_TOKEN"
-      }
+        stage('Test + Coverage') {
+            steps {
+                sh 'npm run test -- --coverage'
+            }
+        }
+
+        stage('SonarCloud analysis') {
+            steps {
+                withSonarQubeEnv("${SONARQUBE_SERVER}") {
+                    sh 'sonar-scanner'
+                }
+            }
+        }
     }
-  }
 }
