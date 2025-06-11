@@ -21,19 +21,21 @@ pipeline {
                 sh 'npm ci'
             }
         }
-
+        stage('Generate Prisma Client') {
+            steps {
+                sh 'npx prisma generate'
+            }
+        }
         stage('Build') {
             steps {
                 sh 'npm run build'
             }
         }
-
         stage('Test + Coverage') {
             steps {
                 sh 'npm run test -- --coverage'
             }
         }
-
         stage('SonarCloud analysis') {
             steps {
                 withSonarQubeEnv("${SONARQUBE_SERVER}") {
