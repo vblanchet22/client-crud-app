@@ -1,6 +1,5 @@
-version: '3.8'
-
 services:
+  # PostgreSQL pour ton projet
   db:
     image: postgres:15
     restart: always
@@ -13,5 +12,41 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
 
+  # Jenkins
+  jenkins:
+    image: jenkins/jenkins:lts
+    container_name: jenkins
+    ports:
+      - "8081:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+
+
+  # SonarQube
+  sonarqube:
+    image: sonarqube:10-community
+    container_name: sonarqube
+    ports:
+      - "9000:9000"
+    environment:
+      - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true
+    volumes:
+      - sonarqube_data:/opt/sonarqube/data
+      - sonarqube_extensions:/opt/sonarqube/extensions
+
+  # OWASP ZAP en mode daemon
+  zaproxy:
+    image: ghcr.io/zaproxy/zaproxy:latest
+    container_name: owasp-zap
+    ports:
+      - "8090:8090"
+    command: zap.sh -daemon -port 8090 -host 0.0.0.0
+
+
 volumes:
   postgres-data:
+  jenkins_home:
+  sonarqube_data:
+  sonarqube_extensions:
