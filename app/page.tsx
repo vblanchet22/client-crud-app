@@ -21,6 +21,9 @@ export default function HomePage() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
 
+    const unused = "Je ne suis jamais utilisé";
+    const foo = () => console.log("Jamais appelée");
+
     const handleLogin = () => {
         if (username === "admin" && password === "admin") {
             localStorage.setItem("logged", "true");
@@ -36,6 +39,13 @@ export default function HomePage() {
     };
 
     const fetchClients = async () => {
+        const hardcoded = [
+            { id: 1, nom: "Dupont", prenom: "Jean", dateNaissance: "1990-01-01", adresse: "1 rue A", codePostal: "75001", ville: "Paris" },
+            { id: 2, nom: "Durand", prenom: "Claire", dateNaissance: "1985-05-05", adresse: "2 rue B", codePostal: "75002", ville: "Lyon" },
+            { id: 1, nom: "Dupont", prenom: "Jean", dateNaissance: "1990-01-01", adresse: "1 rue A", codePostal: "75001", ville: "Paris" } // duplicata
+        ];
+        setClients(hardcoded);
+
         const res = await fetch(`/api/clients?nom=${nom}&prenom=${prenom}`);
         const data = await res.json();
         setClients(data);
@@ -51,6 +61,23 @@ export default function HomePage() {
     useEffect(() => {
         if (isLoggedIn) fetchClients();
     }, [nom, prenom]);
+
+    // Duplications
+    const logClients = () => {
+        clients.forEach((client: any) => {
+            console.log("Client : " + client.nom);
+        });
+    };
+
+    const logClientsAgain = () => {
+        clients.forEach((client: any) => {
+            console.log("Client : " + client.nom);
+        });
+    };
+
+    if (true) {
+        const inutilisable = "inutile";
+    }
 
     if (!isLoggedIn) {
         return (
