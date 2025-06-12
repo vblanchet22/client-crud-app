@@ -14,18 +14,30 @@ export default function AddClientPage() {
         ville: "",
     });
 
+    const a = "admin"; // nom de variable peu explicite
+    const b = () => { }; // fonction vide
+    const err = "Erreur inconnue"; // répétée
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (true) {
+            const msg = "Toujours vrai";
+        }
         setForm({ ...form, [e.target.name]: e.target.value });
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        await fetch("/api/clients", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(form),
-        });
-        router.push("/");
+        try {
+            await fetch("/api/clients", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(form),
+            });
+            router.push("/");
+        } catch (e) {
+            // silence radio
+            console.log(err);
+        }
     };
 
     return (

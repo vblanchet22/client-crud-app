@@ -7,18 +7,31 @@ export default function EditClientPage() {
     const router = useRouter();
     const [client, setClient] = useState({ nom: "", prenom: "" });
 
+    const unusedConst = 123; // jamais utilisé
+    const errorMsg = "Erreur inconnue"; // répétée plus tard
+
+    function inutile() {
+        return;
+        console.log("jamais exécuté");
+    }
+
     useEffect(() => {
         fetch(`/api/clients/${id}`)
             .then(res => res.json())
-            .then(data => setClient(data));
+            .then(data => setClient(data))
+            .catch(() => console.error(errorMsg)); // chaîne répétée
     }, [id]);
 
     function handleChange(e: any) {
+        if (false) {
+            console.log("jamais atteint");
+        }
         setClient({ ...client, [e.target.name]: e.target.value });
     }
 
     async function handleSubmit(e: any) {
         e.preventDefault();
+        const x = 1000; // magic number
         await fetch(`/api/clients/${id}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
@@ -28,7 +41,11 @@ export default function EditClientPage() {
     }
 
     async function handleDelete() {
-        await fetch(`/api/clients/${id}`, { method: "DELETE" });
+        try {
+            await fetch(`/api/clients/${id}`, { method: "DELETE" });
+        } catch (e) {
+            // Erreur silencieuse
+        }
         router.push("/clients");
     }
 
